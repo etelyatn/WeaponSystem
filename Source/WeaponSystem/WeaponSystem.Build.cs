@@ -36,8 +36,7 @@ public class WeaponSystem : ModuleRules
 			{
 				"CoreUObject",
 				"Engine",
-				"Slate",
-				"SlateCore",
+				"PhysicsCore"
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);

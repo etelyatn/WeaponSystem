@@ -1,6 +1,6 @@
 // 2021 github.com/EugeneTel/WeaponSystem
 
-#include "WSCharacterWeaponComponent.h"
+#include "Components/WSCharacterWeaponComponent.h"
 #include "GameFramework/Character.h"
 
 APawn* UWSCharacterWeaponComponent::GetPawn()

@@ -44,28 +44,91 @@ public:
 	void SetInfiniteClip(bool bEnable);
 
 //----------------------------------------------------------------------------------------------------------------------
+// State
+//----------------------------------------------------------------------------------------------------------------------
+
+	/** get targeting state */
+	UFUNCTION(BlueprintCallable, Category = "WeaponSystem")
+    bool IsTargeting() const;
+
+	/** set targeting state */
+	UFUNCTION(BlueprintCallable, Category = "WeaponSystem")
+	void SetIsTargeting(const bool NewState);
+	
+	/** is currently firing */
+	UFUNCTION(BlueprintCallable, Category="WeaponSystem")
+    bool IsFiring() const;
+
+//----------------------------------------------------------------------------------------------------------------------
+// Inventory
+//----------------------------------------------------------------------------------------------------------------------
+
+	/**
+	* [server] add weapon to inventory
+	*
+	* @param Weapon	Weapon to add.
+	*/
+	void AddWeapon(class AWSWeapon* Weapon);
+
+	/**
+	* [server] remove weapon from inventory
+	*
+	* @param Weapon	Weapon to remove.
+	*/
+	void RemoveWeapon(class AWSWeapon* Weapon);
+
+	/**
+	* Find in inventory
+	*
+	* @param WeaponClass	Class of weapon to find.
+	*/
+	class AWSWeapon* FindWeapon(TSubclassOf<class AWSWeapon> WeaponClass);
+
+	/**
+	* [server + local] equips weapon from inventory
+	*
+	* @param Weapon	Weapon to equip
+	*/
+	void EquipWeapon(class AWSWeapon* Weapon);
+
+	/** equip next weapon from inventory */
+	UFUNCTION(BlueprintCallable, Category="WeaponSystem")
+	void NextWeapon();
+
+	/** equip previous weapon from inventory */
+	UFUNCTION(BlueprintCallable, Category="WeaponSystem")
+	void PrevWeapon();
+
+	/** get total number of inventory items */
+	int32 GetInventoryCount() const;
+
+	/**
+	* get weapon from inventory at index. Index validity is not checked.
+	*
+	* @param Index Inventory index
+	*/
+	class AWSWeapon* GetInventoryWeapon(int32 Index) const;
+
+//----------------------------------------------------------------------------------------------------------------------
 // Weapon usage
 //----------------------------------------------------------------------------------------------------------------------
 	/** [local] starts weapon fire */
+	UFUNCTION(BlueprintCallable, Category="WeaponSystem")
 	virtual void StartWeaponFire();
 
 	/** [local] stops weapon fire */
+	UFUNCTION(BlueprintCallable, Category="WeaponSystem")
 	virtual void StopWeaponFire();
+
+	/** reload current weapon */
+	UFUNCTION(BlueprintCallable, Category="WeaponSystem")
+	virtual void Reload();
 
 	/** check if pawn can fire weapon */
 	virtual bool CanFire() { return true; }
 
 	/** check if pawn can reload weapon */
 	virtual bool CanReload() { return true; }
-	
-	/** get targeting state */
-	UFUNCTION(BlueprintCallable, Category = "WeaponSystem|Weapon")
-    bool IsTargeting() const;
-	
-	/** get targeting state */
-	UFUNCTION(BlueprintCallable, Category = "WeaponSystem|Weapon")
-    bool IsFiring() const;
-
 
 //----------------------------------------------------------------------------------------------------------------------
 // Pawn
@@ -132,6 +195,28 @@ protected:
 	bool bWantsToFire;
 
 	/** current targeting state */
-	UPROPERTY(Transient/*, Replicated*/)
+	UPROPERTY(Transient/*, Replicated */)
 	bool bIsTargeting;
+
+//----------------------------------------------------------------------------------------------------------------------
+// Inventory
+//----------------------------------------------------------------------------------------------------------------------
+
+	
+	/** updates current weapon */
+	void SetCurrentWeapon(class AWSWeapon* NewWeapon, class AWSWeapon* LastWeapon = nullptr);
+
+	/** current weapon rep handler */
+	UFUNCTION()
+    void OnRep_CurrentWeapon(class AWSWeapon* LastWeapon);
+
+	/** [server] spawns default inventory */
+	void SpawnDefaultInventory();
+
+	/** [server] remove all weapons from inventory and destroy them */
+	void DestroyInventory();
+
+	/** equip weapon */
+	UFUNCTION(reliable, server, WithValidation)
+    void ServerEquipWeapon(class AWSWeapon* NewWeapon);
 };

@@ -49,6 +49,10 @@ struct FWeaponData
 	UPROPERTY(EditDefaultsOnly, Category=Ammo)
 	bool bInfiniteClip;
 
+	/** name of bone/socket for muzzle in weapon mesh */
+	UPROPERTY(EditDefaultsOnly)
+	FName MuzzleAttachPoint;
+
 	/** ammo type for the weapon */
 	UPROPERTY(EditDefaultsOnly, Category=Ammo)
 	EAmmoType AmmoType;
@@ -73,21 +77,22 @@ struct FWeaponData
 	UPROPERTY(EditDefaultsOnly, Category=WeaponStat)
 	float NoAnimReloadDuration;
 
-	/** animation played on pawn */
-	UPROPERTY(EditDefaultsOnly, Category=WeaponStat)
-	UAnimMontage* Animation;
+	// /** animation played on pawn */
+	// UPROPERTY(EditDefaultsOnly, Category=WeaponStat)
+	// UAnimMontage* Animation;
 
 	/** defaults */
 	FWeaponData():
 		bInfiniteAmmo(false),
 		bInfiniteClip(false),
+		MuzzleAttachPoint(FName("Muzzle")),
 		AmmoType(EAmmoType::EAT_Bullet),
 		MaxAmmo(100),
 		AmmoPerClip(20),
 		InitialClips(4),
 		TimeBetweenShots(0.2f),
-		NoAnimReloadDuration(1.0f),
-		Animation(nullptr)
+		NoAnimReloadDuration(1.0f)
+		// Animation(nullptr)
 	{
 	}
 };
@@ -122,6 +127,16 @@ public:
 
 	/** attaches weapon mesh to owner */
 	virtual void AttachMesh(USceneComponent* Parent, FName SocketName);
+
+	/** set the weapon's owning component and pawn */
+	void SetOwningComponent(UWSWeaponComponent* NewComponent);
+
+//----------------------------------------------------------------------------------------------------------------------
+// State
+//----------------------------------------------------------------------------------------------------------------------
+	
+	UFUNCTION(BlueprintCallable, Category="WeaponSystem")
+	EWeaponState GetCurrentState();
 
 //----------------------------------------------------------------------------------------------------------------------
 // Input
@@ -199,7 +214,7 @@ protected:
 	USkeletalMeshComponent* Mesh;
 
 	/** weapon data */
-	UPROPERTY(EditDefaultsOnly, Category="WeaponSystem|Config")
+	UPROPERTY(EditDefaultsOnly, Category="WeaponSystem")
 	FWeaponData WeaponConfig;
 
 	/** Whether to allow automatic weapons to catch up with shorter refire cycles */
@@ -315,27 +330,34 @@ protected:
 	/** is fire animation looped? */
 	UPROPERTY(EditDefaultsOnly, Category="WeaponSystem|Animation")
 	uint32 bLoopedFireAnim : 1;
+
+	/** weapon reload animations */
+	UPROPERTY(EditDefaultsOnly, Category="WeaponSystem|Animation")
+	UAnimMontage* WeaponReloadAnim;
 	
-	/** reload animations */
+	/** weapon fire animations */
 	UPROPERTY(EditDefaultsOnly, Category="WeaponSystem|Animation")
-	UAnimMontage* ReloadAnim;
+	UAnimMontage* WeaponFireAnim;
+	
+	/** pawn reload animations */
+	UPROPERTY(EditDefaultsOnly, Category="WeaponSystem|Animation")
+	UAnimMontage* PawnReloadAnim;
 
-	/** equip animations */
+	/** pawn equip animations */
 	UPROPERTY(EditDefaultsOnly, Category="WeaponSystem|Animation")
-	UAnimMontage* EquipAnim;
+	UAnimMontage* PawnEquipAnim;
 
-	/** fire animations */
+	/** pawn fire animations */
 	UPROPERTY(EditDefaultsOnly, Category="WeaponSystem|Animation")
-	UAnimMontage* FireAnim;
+	UAnimMontage* PawnFireAnim;
+
+
 
 //----------------------------------------------------------------------------------------------------------------------
 // VFX
 //----------------------------------------------------------------------------------------------------------------------
 
 protected:
-	/** name of bone/socket for muzzle in weapon mesh */
-	UPROPERTY(EditDefaultsOnly, Category="WeaponSystem|VFX")
-	FName MuzzleAttachPoint;
 
 	/** is muzzle FX looped? */
 	UPROPERTY(EditDefaultsOnly, Category="WeaponSystem|VFX")
@@ -431,6 +453,9 @@ public:
 
 	/** play weapon sounds */
 	virtual UAudioComponent* PlayWeaponSound(USoundCue* Sound);
+
+	/** play weapon animations */
+	void PlayWeaponAnimation(UAnimationAsset* AnimationToPlay, const bool bIsLoopedAnim = false);
 
 //----------------------------------------------------------------------------------------------------------------------
 // Input - server side

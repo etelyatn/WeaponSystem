@@ -1,10 +1,10 @@
 ﻿// 2021 github.com/EugeneTel/WeaponSystem
 
 
-#include "WSImpactEffect.h"
+#include "Effects/WSExplosionEffect.h"
 
 // Sets default values
-AWSImpactEffect::AWSImpactEffect()
+AWSExplosionEffect::AWSExplosionEffect()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -12,14 +12,14 @@ AWSImpactEffect::AWSImpactEffect()
 }
 
 // Called when the game starts or when spawned
-void AWSImpactEffect::BeginPlay()
+void AWSExplosionEffect::BeginPlay()
 {
 	Super::BeginPlay();
 	
 }
 
 // Called every frame
-void AWSImpactEffect::Tick(float DeltaTime)
+void AWSExplosionEffect::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 

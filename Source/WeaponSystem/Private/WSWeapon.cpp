@@ -3,7 +3,7 @@
 
 #include "WSWeapon.h"
 
-#include "WSWeaponComponent.h"
+#include "Components/WSWeaponComponent.h"
 #include "Components/AudioComponent.h"
 #include "Sound/SoundCue.h"
 #include "Kismet/GameplayStatics.h"
@@ -13,6 +13,36 @@
 AWSWeapon::AWSWeapon()
 {
 	PrimaryActorTick.bCanEverTick = false;
+
+	Mesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("WeaponMesh"));
+	Mesh->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::OnlyTickPoseWhenRendered;
+	Mesh->bReceivesDecals = false;
+	Mesh->CastShadow = false;
+	Mesh->SetCollisionObjectType(ECC_WorldDynamic);
+	Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	Mesh->SetCollisionResponseToAllChannels(ECR_Ignore);
+	RootComponent = Mesh;
+
+	// defaults
+	bLoopedMuzzleFX = false;
+	bLoopedFireAnim = false;
+	bPlayingFireAnim = false;
+	bIsEquipped = false;
+	bWantsToFire = false;
+	bPendingReload = false;
+	bPendingEquip = false;
+	CurrentState = EWeaponState::EWS_Idle;
+
+	CurrentAmmo = 0;
+	CurrentAmmoInClip = 0;
+	BurstCounter = 0;
+	LastFireTime = 0.0f;
+
+	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.TickGroup = TG_PrePhysics;
+	SetRemoteRoleForBackwardsCompat(ROLE_SimulatedProxy);
+	bReplicates = true;
+	bNetUseOwnerRelevancy = true;
 }
 
 // Called when the game starts or when spawned
@@ -53,14 +83,41 @@ USkeletalMeshComponent* AWSWeapon::GetWeaponMesh() const
 
 void AWSWeapon::DetachMesh()
 {
-	Mesh->DetachFromComponent(FDetachmentTransformRules::KeepRelativeTransform);
-	Mesh->SetHiddenInGame(true);
+	if (Mesh)
+	{
+		Mesh->DetachFromComponent(FDetachmentTransformRules::KeepRelativeTransform);
+		Mesh->SetHiddenInGame(true);
+	}
+
 }
 
 void AWSWeapon::AttachMesh(USceneComponent* Parent, FName SocketName)
 {
-	Mesh->SetHiddenInGame(false);
-	Mesh->AttachToComponent(Parent, FAttachmentTransformRules::KeepRelativeTransform, SocketName);
+	if (Mesh)
+	{
+		Mesh->SetHiddenInGame(false);
+		Mesh->AttachToComponent(Parent, FAttachmentTransformRules::KeepRelativeTransform, SocketName);
+	}
+}
+
+void AWSWeapon::SetOwningComponent(UWSWeaponComponent* NewComponent)
+{
+	if (WeaponComponent != NewComponent)
+	{
+		WeaponComponent = NewComponent;
+
+		// set component owner as a weapon owner
+		if (NewComponent)
+		{
+			SetInstigator(NewComponent->GetPawn());
+			SetOwner(NewComponent->GetPawn());
+		}
+	}
+}
+
+EWeaponState AWSWeapon::GetCurrentState()
+{
+	return CurrentState;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -107,18 +164,26 @@ void AWSWeapon::StartReload(bool bFromReplication)
 		bPendingReload = true;
 		DetermineWeaponState();
 
-		float AnimDuration = WeaponComponent->PlayPawnAnimation(ReloadAnim);
-		if (AnimDuration <= 0.0f)
+		// pawn animation
+		float PawnAnimDuration = WeaponComponent->PlayPawnAnimation(PawnReloadAnim);
+		if (PawnAnimDuration <= 0.0f)
 		{
-			AnimDuration = WeaponConfig.NoAnimReloadDuration;
+			PawnAnimDuration = WeaponConfig.NoAnimReloadDuration;
 		}
 
-		GetWorldTimerManager().SetTimer(TimerHandle_StopReload, this, &AWSWeapon::StopReload, AnimDuration, false);
+		GetWorldTimerManager().SetTimer(TimerHandle_StopReload, this, &AWSWeapon::StopReload, PawnAnimDuration, false);
 		if (GetLocalRole() == ROLE_Authority)
 		{
-			GetWorldTimerManager().SetTimer(TimerHandle_ReloadWeapon, this, &AWSWeapon::ReloadWeapon, FMath::Max(0.1f, AnimDuration - 0.1f), false);
+			GetWorldTimerManager().SetTimer(TimerHandle_ReloadWeapon, this, &AWSWeapon::ReloadWeapon, FMath::Max(0.1f, PawnAnimDuration - 0.1f), false);
 		}
-		
+
+		// weapon animation
+		if (WeaponReloadAnim)
+		{
+			PlayWeaponAnimation(WeaponReloadAnim);
+		}
+
+		// weapon sound
 		if (WeaponComponent && WeaponComponent->IsLocallyControlled())
 		{
 			PlayWeaponSound(ReloadSound);
@@ -132,7 +197,7 @@ void AWSWeapon::StopReload()
 	{
 		bPendingReload = false;
 		DetermineWeaponState();
-		WeaponComponent->StopPawnAnimation(ReloadAnim);
+		WeaponComponent->StopPawnAnimation(PawnReloadAnim);
 	}
 }
 
@@ -261,7 +326,7 @@ void AWSWeapon::OnEquip(const AWSWeapon* LastWeapon)
 	// Only play animation if last weapon is valid
 	if (LastWeapon)
 	{
-		float Duration = WeaponComponent->PlayPawnAnimation(EquipAnim);
+		float Duration = WeaponComponent->PlayPawnAnimation(PawnEquipAnim);
 		if (Duration <= 0.0f)
 		{
 			// failsafe
@@ -315,7 +380,7 @@ void AWSWeapon::OnUnEquip()
 
 	if (bPendingReload)
 	{
-		WeaponComponent->StopPawnAnimation(ReloadAnim);
+		WeaponComponent->StopPawnAnimation(PawnReloadAnim);
 		bPendingReload = false;
 
 		GetWorldTimerManager().ClearTimer(TimerHandle_StopReload);
@@ -324,7 +389,7 @@ void AWSWeapon::OnUnEquip()
 
 	if (bPendingEquip)
 	{
-		WeaponComponent->StopPawnAnimation(EquipAnim);
+		WeaponComponent->StopPawnAnimation(PawnEquipAnim);
 		bPendingEquip = false;
 
 		GetWorldTimerManager().ClearTimer(TimerHandle_OnEquipFinished);
@@ -561,21 +626,29 @@ void AWSWeapon::SimulateWeaponFire()
 		return;
 	}
 
+	// play MuzzleFX
 	if (MuzzleFX)
 	{
 		if (!bLoopedMuzzleFX || !MuzzlePSC)
 		{
-			MuzzlePSC = UGameplayStatics::SpawnEmitterAttached(MuzzleFX, GetWeaponMesh(), MuzzleAttachPoint);
+			MuzzlePSC = UGameplayStatics::SpawnEmitterAttached(MuzzleFX, GetWeaponMesh(), WeaponConfig.MuzzleAttachPoint);
 			
 		}
 	}
 
+	// play animation
 	if (!bLoopedFireAnim || !bPlayingFireAnim)
 	{
-		WeaponComponent->PlayPawnAnimation(FireAnim);
-		bPlayingFireAnim = true;
+		WeaponComponent->PlayPawnAnimation(PawnFireAnim);
+		PlayWeaponAnimation(WeaponFireAnim);
+
+		if (WeaponFireAnim || PawnFireAnim)
+		{
+			bPlayingFireAnim = true;
+		}
 	}
 
+	// play fire sound
 	if (bLoopedFireSound)
 	{
 		if (FireAC)
@@ -614,7 +687,7 @@ void AWSWeapon::StopSimulatingWeaponFire()
 
 	if (bLoopedFireAnim && bPlayingFireAnim && WeaponComponent)
 	{
-		WeaponComponent->StopPawnAnimation(FireAnim);
+		WeaponComponent->StopPawnAnimation(PawnFireAnim);
 		bPlayingFireAnim = false;
 	}
 
@@ -636,6 +709,14 @@ UAudioComponent* AWSWeapon::PlayWeaponSound(USoundCue* Sound)
 	}
 
 	return AC;
+}
+
+void AWSWeapon::PlayWeaponAnimation(UAnimationAsset* AnimationToPlay, const bool bIsLoopedAnim)
+{
+	if (Mesh && AnimationToPlay)
+	{
+		Mesh->PlayAnimation(AnimationToPlay, bIsLoopedAnim);
+	}
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -735,12 +816,12 @@ FVector AWSWeapon::GetDamageStartLocation(const FVector& AimDir) const
 
 FVector AWSWeapon::GetMuzzleLocation() const
 {
-	return Mesh ? Mesh->GetSocketLocation(MuzzleAttachPoint) : FVector::ZeroVector;
+	return Mesh ? Mesh->GetSocketLocation(WeaponConfig.MuzzleAttachPoint) : FVector::ZeroVector;
 }
 
 FVector AWSWeapon::GetMuzzleDirection() const
 {
-	return Mesh ? Mesh->GetSocketRotation(MuzzleAttachPoint).Vector() : FVector::ZeroVector;
+	return Mesh ? Mesh->GetSocketRotation(WeaponConfig.MuzzleAttachPoint).Vector() : FVector::ZeroVector;
 }
 
 FHitResult AWSWeapon::WeaponTrace(const FVector& TraceFrom, const FVector& TraceTo) const
