@@ -805,8 +805,7 @@ void AWSWeapon::OnRep_Reload()
 
 FVector AWSWeapon::GetAdjustedAim() const
 {
-	// @TODO
-	return FVector::ZeroVector;
+	return GetMuzzleDirection();
 }
 
 FVector AWSWeapon::GetDamageStartLocation(const FVector& AimDir) const
