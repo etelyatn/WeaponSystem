@@ -7,6 +7,14 @@
 
 DECLARE_LOG_CATEGORY_EXTERN(LogWeaponSystem, Log, All);
 
+// define weapon default collisions if not set
+#ifndef COLLISION_WEAPON
+	#define COLLISION_WEAPON	ECC_GameTraceChannel1
+#endif
+#ifndef COLLISION_PROJECTILE
+	#define COLLISION_PROJECTILE	ECC_GameTraceChannel2
+#endif
+
 class FWeaponSystemModule : public IModuleInterface
 {
 public:

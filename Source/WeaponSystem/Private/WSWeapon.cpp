@@ -3,11 +3,13 @@
 
 #include "WSWeapon.h"
 
+#include "WeaponSystem.h"
 #include "Components/WSWeaponComponent.h"
 #include "Components/AudioComponent.h"
 #include "Sound/SoundCue.h"
 #include "Kismet/GameplayStatics.h"
 #include "Particles/ParticleSystemComponent.h"
+#include "Net/UnrealNetwork.h"
 
 // Sets default values
 AWSWeapon::AWSWeapon()
@@ -21,6 +23,9 @@ AWSWeapon::AWSWeapon()
 	Mesh->SetCollisionObjectType(ECC_WorldDynamic);
 	Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	Mesh->SetCollisionResponseToAllChannels(ECR_Ignore);
+	Mesh->SetCollisionResponseToChannel(COLLISION_WEAPON, ECR_Block);
+	Mesh->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
+	Mesh->SetCollisionResponseToChannel(COLLISION_PROJECTILE, ECR_Block);
 	RootComponent = Mesh;
 
 	// defaults
@@ -400,7 +405,7 @@ void AWSWeapon::OnUnEquip()
 
 void AWSWeapon::OnEnterInventory(UWSWeaponComponent* InWeaponComponent)
 {
-	WeaponComponent = InWeaponComponent;
+	SetOwningComponent(InWeaponComponent);
 }
 
 void AWSWeapon::OnLeaveInventory()
@@ -412,7 +417,7 @@ void AWSWeapon::OnLeaveInventory()
 
 	if (GetLocalRole() == ROLE_Authority)
 	{
-		WeaponComponent = nullptr;
+		SetOwningComponent(nullptr);
 	}
 }
 
@@ -831,8 +836,21 @@ FHitResult AWSWeapon::WeaponTrace(const FVector& TraceFrom, const FVector& Trace
 	TraceParams.bDebugQuery = true;
 
 	FHitResult Hit(ForceInit);
-	GetWorld()->LineTraceSingleByChannel(Hit, TraceFrom, TraceTo, ECC_Visibility, TraceParams);
+	GetWorld()->LineTraceSingleByChannel(Hit, TraceFrom, TraceTo, COLLISION_WEAPON, TraceParams);
 
 	return Hit;
+}
+
+void AWSWeapon::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AWSWeapon, WeaponComponent);
+
+	DOREPLIFETIME_CONDITION(AWSWeapon, CurrentAmmo, COND_OwnerOnly);
+	DOREPLIFETIME_CONDITION(AWSWeapon, CurrentAmmoInClip, COND_OwnerOnly);
+
+	DOREPLIFETIME_CONDITION(AWSWeapon, BurstCounter, COND_SkipOwner );
+	DOREPLIFETIME_CONDITION(AWSWeapon, bPendingReload, COND_SkipOwner);
 }
 

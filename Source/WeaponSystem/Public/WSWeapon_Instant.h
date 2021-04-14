@@ -81,7 +81,7 @@ struct FInstantWeaponData
 /**
  * 
  */
-UCLASS()
+UCLASS(Abstract, Blueprintable)
 class WEAPONSYSTEM_API AWSWeapon_Instant : public AWSWeapon
 {
 	GENERATED_BODY()

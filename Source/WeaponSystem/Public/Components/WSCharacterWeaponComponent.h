@@ -9,7 +9,7 @@
 /**
  * Weapon component for Character
  */
-UCLASS(meta=(BlueprintSpawnableComponent))
+UCLASS(Blueprintable, meta=(BlueprintSpawnableComponent))
 class WEAPONSYSTEM_API UWSCharacterWeaponComponent : public UWSWeaponComponent
 {
 	GENERATED_BODY()

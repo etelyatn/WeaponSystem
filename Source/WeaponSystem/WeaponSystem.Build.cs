@@ -26,7 +26,7 @@ public class WeaponSystem : ModuleRules
 			new string[]
 			{
 				"Core",
-				// ... add other public dependencies that you statically link with here ...
+				"OnlineSubsystem",
 			}
 			);
 			
@@ -36,7 +36,7 @@ public class WeaponSystem : ModuleRules
 			{
 				"CoreUObject",
 				"Engine",
-				"PhysicsCore"
+				"PhysicsCore",
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);

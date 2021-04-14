@@ -2,12 +2,15 @@
 
 
 #include "WSProjectile.h"
+
+#include "WeaponSystem.h"
 #include "Components/AudioComponent.h"
 #include "Components/SphereComponent.h"
 #include "Effects/WSExplosionEffect.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Particles/ParticleSystemComponent.h"
+#include "Net/UnrealNetwork.h"
 
 AWSProjectile::AWSProjectile()
 {
@@ -17,7 +20,7 @@ AWSProjectile::AWSProjectile()
 	CollisionComp->AlwaysLoadOnServer = true;
 	CollisionComp->bTraceComplexOnMove = true;
 	CollisionComp->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-	CollisionComp->SetCollisionObjectType(ECC_Visibility); // TODO: set collision as parameter COLLISION_PROJECTILE
+	CollisionComp->SetCollisionObjectType(COLLISION_PROJECTILE);
 	CollisionComp->SetCollisionResponseToAllChannels(ECR_Ignore);
 	CollisionComp->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Block);
 	CollisionComp->SetCollisionResponseToChannel(ECC_WorldDynamic, ECR_Block);
@@ -85,7 +88,7 @@ void AWSProjectile::OnRep_Exploded()
 	const FVector EndTrace = GetActorLocation() + ProjDirection * 150;
 	FHitResult Impact;
 	
-	if (!GetWorld()->LineTraceSingleByChannel(Impact, StartTrace, EndTrace, ECC_Visibility, FCollisionQueryParams(SCENE_QUERY_STAT(ProjClient), true, GetInstigator())))
+	if (!GetWorld()->LineTraceSingleByChannel(Impact, StartTrace, EndTrace, COLLISION_PROJECTILE, FCollisionQueryParams(SCENE_QUERY_STAT(ProjClient), true, GetInstigator())))
 	{
 		// failsafe
 		Impact.ImpactPoint = GetActorLocation();
@@ -155,5 +158,5 @@ void AWSProjectile::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLif
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	
-	/*DOREPLIFETIME(AWSProjectile, bExploded);*/
+	DOREPLIFETIME(AWSProjectile, bExploded);
 }

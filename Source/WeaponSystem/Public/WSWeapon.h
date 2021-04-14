@@ -222,7 +222,7 @@ protected:
 	bool bAllowAutomaticWeaponCatchup = true;
 
 	/** The weapon component attached to a Pawn */
-	UPROPERTY(BlueprintReadWrite, Transient, /*ReplicatedUsing=OnRep_WeaponComponent,*/ Category="WeaponSystem|Weapon")
+	UPROPERTY(BlueprintReadWrite, Transient, ReplicatedUsing=OnRep_WeaponComponent, Category="WeaponSystem|Weapon")
 	UWSWeaponComponent* WeaponComponent;
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -233,11 +233,11 @@ protected:
 	EWeaponState CurrentState;
 	
 	/** current total ammo */
-	UPROPERTY(BlueprintReadWrite, VisibleInstanceOnly, Category="WeaponSystem|Weapon")
+	UPROPERTY(BlueprintReadWrite, Transient, Replicated, Category="WeaponSystem|Weapon")
 	int32 CurrentAmmo;
 
 	/** current ammo - inside clip */
-	UPROPERTY(BlueprintReadWrite, VisibleInstanceOnly, Category="WeaponSystem|Weapon")
+	UPROPERTY(BlueprintReadWrite, Transient, Replicated, Category="WeaponSystem|Weapon")
 	int32 CurrentAmmoInClip;
 
 	/** is fire animation playing? */
@@ -250,7 +250,7 @@ protected:
 	bool bWantsToFire;
 
 	/** is reload animation playing? */
-	/*UPROPERTY(Transient, ReplicatedUsing=OnRep_Reload)*/
+	UPROPERTY(Transient, ReplicatedUsing=OnRep_Reload)
 	bool bPendingReload;
 
 	/** is equip animation playing? */
@@ -260,7 +260,7 @@ protected:
 	bool bRefiring;
 
 	/** burst counter, used for replicating fire events to remote clients */
-	/*UPROPERTY(Transient, ReplicatedUsing=OnRep_BurstCounter)*/
+	UPROPERTY(Transient, ReplicatedUsing=OnRep_BurstCounter)
 	int32 BurstCounter;
 
 	/** time of last successful weapon fire */

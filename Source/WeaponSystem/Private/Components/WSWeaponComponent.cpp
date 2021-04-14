@@ -2,6 +2,7 @@
 
 #include "Components/WSWeaponComponent.h"
 #include "WSWeapon.h"
+#include "Net/UnrealNetwork.h"
 
 UWSWeaponComponent::UWSWeaponComponent()
 {
@@ -9,6 +10,7 @@ UWSWeaponComponent::UWSWeaponComponent()
 	// defaults
 	bIsTargeting = false;
 	bWantsToFire = false;
+	SetIsReplicatedByDefault(true);
 }
 
 // Called when the game starts
@@ -21,7 +23,6 @@ void UWSWeaponComponent::BeginPlay()
 		// Needs to happen after character is added to repgraph
 		GetWorld()->GetTimerManager().SetTimerForNextTick(this, &UWSWeaponComponent::SpawnDefaultInventory);
 	}
-
 }
 
 AWSWeapon* UWSWeaponComponent::GetWeapon() const
@@ -231,7 +232,7 @@ APlayerController* UWSWeaponComponent::GetPlayerController()
 
 bool UWSWeaponComponent::IsLocallyControlled()
 {
-	return GetPawn() ? GetPawn()->IsLocallyControlled() : true;
+	return (GetPlayerController() && GetPlayerController()->IsLocalController());
 }
 
 void UWSWeaponComponent::PlayCameraShake(TSubclassOf<UMatineeCameraShake> Shake, float Scale)
@@ -345,5 +346,19 @@ void UWSWeaponComponent::ServerEquipWeapon_Implementation(AWSWeapon* NewWeapon)
 bool UWSWeaponComponent::ServerEquipWeapon_Validate(AWSWeapon* NewWeapon)
 {
 	return true;
+}
+
+void UWSWeaponComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	// only to local owner: weapon change requests are locally instigated, other clients don't need it
+	DOREPLIFETIME_CONDITION(UWSWeaponComponent, Inventory, COND_OwnerOnly);
+
+	// everyone except local owner: flag change is locally instigated
+	DOREPLIFETIME_CONDITION(UWSWeaponComponent, bIsTargeting, COND_SkipOwner);
+
+	// everyone
+	DOREPLIFETIME(UWSWeaponComponent, CurrentWeapon);
 }
 

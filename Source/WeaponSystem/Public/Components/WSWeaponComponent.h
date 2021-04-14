@@ -9,7 +9,7 @@
 class AWSPlayerController;
 class AWSWeapon;
 
-UCLASS(meta=(BlueprintSpawnableComponent))
+UCLASS(Blueprintable, meta=(BlueprintSpawnableComponent))
 class WEAPONSYSTEM_API UWSWeaponComponent : public UActorComponent
 {
 	GENERATED_BODY()
@@ -168,7 +168,7 @@ public:
 protected:
 
 	/** currently equipped weapon */
-	UPROPERTY(BlueprintReadWrite, Category="WeaponSystem|Inventory")
+	UPROPERTY(BlueprintReadWrite, Transient, ReplicatedUsing=OnRep_CurrentWeapon, Category="WeaponSystem|Inventory")
 	AWSWeapon* CurrentWeapon;
 
 	/** default inventory list */
@@ -176,7 +176,7 @@ protected:
 	TArray<TSubclassOf<AWSWeapon>> DefaultInventoryClasses;
 
 	/** weapons in inventory */
-	UPROPERTY(BlueprintReadWrite, VisibleInstanceOnly, Transient, /*Replicated,*/ Category="WeaponSystem|Inventory")
+	UPROPERTY(BlueprintReadWrite, VisibleInstanceOnly, Transient, Replicated, Category="WeaponSystem|Inventory")
 	TArray<AWSWeapon*> Inventory;
 
 	/** socket or bone name for attaching weapon mesh */
@@ -195,13 +195,12 @@ protected:
 	bool bWantsToFire;
 
 	/** current targeting state */
-	UPROPERTY(Transient/*, Replicated */)
+	UPROPERTY(Transient, Replicated)
 	bool bIsTargeting;
 
 //----------------------------------------------------------------------------------------------------------------------
 // Inventory
 //----------------------------------------------------------------------------------------------------------------------
-
 	
 	/** updates current weapon */
 	void SetCurrentWeapon(class AWSWeapon* NewWeapon, class AWSWeapon* LastWeapon = nullptr);
