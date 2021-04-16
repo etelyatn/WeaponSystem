@@ -69,6 +69,13 @@ public:
 	* @param Weapon	Weapon to add.
 	*/
 	void AddWeapon(class AWSWeapon* Weapon);
+	
+	/**
+	* [server] Spawn and add weapon to inventory
+	*
+	* @param WeaponClass	Class of weapon to find.
+	*/
+	AWSWeapon* AddWeapon(TSubclassOf<AWSWeapon> WeaponClass);
 
 	/**
 	* [server] remove weapon from inventory

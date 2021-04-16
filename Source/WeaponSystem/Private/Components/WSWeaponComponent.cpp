@@ -81,16 +81,32 @@ void UWSWeaponComponent::SetIsTargeting(const bool NewState)
 
 void UWSWeaponComponent::AddWeapon(AWSWeapon* Weapon)
 {
-	if (Weapon && GetPawn()->GetLocalRole() == ROLE_Authority)
+	if (Weapon && GetPawn()->HasAuthority())
 	{
 		Weapon->OnEnterInventory(this);
 		Inventory.AddUnique(Weapon);
 	}
 }
 
+AWSWeapon* UWSWeaponComponent::AddWeapon(TSubclassOf<AWSWeapon> WeaponClass)
+{
+	if (WeaponClass && GetPawn()->HasAuthority())
+	{
+		FActorSpawnParameters SpawnInfo;
+		SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+		AWSWeapon* NewWeapon = GetWorld()->SpawnActor<AWSWeapon>(WeaponClass, SpawnInfo);
+		
+		AddWeapon(NewWeapon);
+
+		return NewWeapon;
+	}
+
+	return nullptr;
+}
+
 void UWSWeaponComponent::RemoveWeapon(AWSWeapon* Weapon)
 {
-	if (Weapon && GetPawn()->GetLocalRole() == ROLE_Authority)
+	if (Weapon && GetPawn()->HasAuthority())
 	{
 		Weapon->OnLeaveInventory();
 		Inventory.RemoveSingle(Weapon);
@@ -114,7 +130,7 @@ void UWSWeaponComponent::EquipWeapon(AWSWeapon* Weapon)
 {
 	if (Weapon)
 	{
-		if (GetPawn()->GetLocalRole() == ROLE_Authority)
+		if (GetPawn()->HasAuthority())
 		{
 			SetCurrentWeapon(Weapon, CurrentWeapon);
 		}
@@ -305,10 +321,7 @@ void UWSWeaponComponent::SpawnDefaultInventory()
 	{
 		if (DefaultInventoryClasses[i])
 		{
-			FActorSpawnParameters SpawnInfo;
-			SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-			AWSWeapon* NewWeapon = GetWorld()->SpawnActor<AWSWeapon>(DefaultInventoryClasses[i], SpawnInfo);
-			AddWeapon(NewWeapon);
+			AddWeapon(DefaultInventoryClasses[i]);
 		}
 	}
 
