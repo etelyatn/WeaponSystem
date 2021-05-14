@@ -189,9 +189,12 @@ void AWSWeapon::StartReload(bool bFromReplication)
 		}
 
 		// weapon sound
-		if (WeaponComponent && WeaponComponent->IsLocallyControlled())
+		if (WeaponComponent->IsLocallyControlled())
 		{
 			PlayWeaponSound(ReloadSound);
+
+			// Notify UI and other subscribers
+			WeaponComponent->NotifyStartReload.Broadcast(WeaponComponent->GetPawn(), PawnAnimDuration);
 		}
 	}
 }
@@ -224,6 +227,12 @@ void AWSWeapon::ReloadWeapon()
 	{
 		CurrentAmmo = FMath::Max(CurrentAmmoInClip, CurrentAmmo);
 	}
+
+	if (WeaponComponent->IsLocallyControlled())
+	{
+		// Notify UI and other subscribers
+		WeaponComponent->NotifyUpdateAmmo.Broadcast(WeaponComponent->GetPawn(), CurrentAmmoInClip, CurrentAmmo);
+	}
 }
 
 void AWSWeapon::ClientStartReload_Implementation()
@@ -245,12 +254,15 @@ void AWSWeapon::GiveAmmo(int AddAmount)
 
 	// start reload if clip was empty
 	if (GetCurrentAmmoInClip() <= 0 &&
-        CanReload() &&
-        WeaponComponent &&
-        WeaponComponent->GetWeapon() == this)
+		CanReload() &&
+		WeaponComponent &&
+		WeaponComponent->GetWeapon() == this)
 	{
 		ClientStartReload();
 	}
+
+	// Notify UI and other subscribers
+	WeaponComponent->NotifyUpdateAmmo.Broadcast(WeaponComponent->GetPawn(), CurrentAmmoInClip, CurrentAmmo);
 }
 
 void AWSWeapon::UseAmmo()
@@ -266,6 +278,9 @@ void AWSWeapon::UseAmmo()
 	}
 
 	// @TODO: AI actions
+
+	// Notify UI and other subscribers
+	WeaponComponent->NotifyUpdateAmmo.Broadcast(WeaponComponent->GetPawn(), CurrentAmmoInClip, CurrentAmmo);
 }
 
 EAmmoType AWSWeapon::GetAmmoType()
@@ -347,10 +362,12 @@ void AWSWeapon::OnEquip(const AWSWeapon* LastWeapon)
 		OnEquipFinished();
 	}
 
-	if (WeaponComponent && WeaponComponent->IsLocallyControlled())
+	if (WeaponComponent->IsLocallyControlled())
 	{
 		PlayWeaponSound(EquipSound);
 	}
+
+	WeaponComponent->NotifyEquipWeapon.Broadcast(WeaponComponent->GetPawn(), this, EquipDuration);
 }
 
 void AWSWeapon::OnEquipFinished()
@@ -399,6 +416,8 @@ void AWSWeapon::OnUnEquip()
 
 		GetWorldTimerManager().ClearTimer(TimerHandle_OnEquipFinished);
 	}
+
+	WeaponComponent->NotifyUnEquipWeapon.Broadcast(WeaponComponent->GetPawn(), this);
 
 	DetermineWeaponState();
 }

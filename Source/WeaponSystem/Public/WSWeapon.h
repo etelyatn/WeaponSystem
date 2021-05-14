@@ -167,11 +167,11 @@ public:
 	
 	/** add ammo */
 	UFUNCTION(BlueprintCallable, Category="WeaponSystem|Ammo")
-	void GiveAmmo(int AddAmount);
+	virtual void GiveAmmo(int AddAmount);
 
 	/** consume a bullet */
 	UFUNCTION(BlueprintCallable, Category="WeaponSystem|Ammo")
-	void UseAmmo();
+	virtual void UseAmmo();
 
 	/** query ammo type */
 	UFUNCTION(BlueprintCallable, Category="WeaponSystem|Ammo")
@@ -202,7 +202,7 @@ public:
 	bool HasInfiniteClip() const;
 
 	/** check if weapon can be reloaded */
-	bool CanReload() const;
+	virtual bool CanReload() const;
 
 protected:
 

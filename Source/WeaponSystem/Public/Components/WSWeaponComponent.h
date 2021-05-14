@@ -9,6 +9,18 @@
 class AWSPlayerController;
 class AWSWeapon;
 
+/** On weapon updates ammo */
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnWeaponSystemUpdateAmmo, APawn*, Pawn, int32, CurrentAmmoInClip, int32, CurrentAmmo);
+/** On Weapon start reload */
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnWeaponSystemStartReload, APawn*, Pawn, float, ReloadingTime);
+/** On Equip new weapon */
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnWeaponSystemEquipWeapon, APawn*, Pawn, AWSWeapon*, Weapon, float, EquipDuration);
+/** On Un Equip weapon */
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnWeaponSystemUnEquipWeapon, APawn*, Pawn, AWSWeapon*, Weapon);
+
+/**
+ * The weapon component must be attached to the actor where the weapon is to be used.
+ */
 UCLASS(Blueprintable, meta=(BlueprintSpawnableComponent))
 class WEAPONSYSTEM_API UWSWeaponComponent : public UActorComponent
 {
@@ -42,6 +54,26 @@ public:
 
 	/** set infinite clip cheat */
 	void SetInfiniteClip(bool bEnable);
+
+//----------------------------------------------------------------------------------------------------------------------
+// Reading data
+//----------------------------------------------------------------------------------------------------------------------
+
+	/** notification when a pawn Equips a weapon. */
+	UPROPERTY(BlueprintAssignable)
+	FOnWeaponSystemEquipWeapon NotifyEquipWeapon;
+	
+	/** notification when a pawn UnEquips a weapon. */
+	UPROPERTY(BlueprintAssignable)
+	FOnWeaponSystemUnEquipWeapon NotifyUnEquipWeapon;
+	
+	/** notification when a weapon updates ammo. */
+	UPROPERTY(BlueprintAssignable)
+	FOnWeaponSystemUpdateAmmo NotifyUpdateAmmo;
+	
+	/** notification when a weapon starts reloading. */
+	UPROPERTY(BlueprintAssignable)
+	FOnWeaponSystemStartReload NotifyStartReload;
 
 //----------------------------------------------------------------------------------------------------------------------
 // State
