@@ -213,6 +213,10 @@ protected:
 	UPROPERTY(VisibleDefaultsOnly, Category="WeaponSystem|Config")
 	USkeletalMeshComponent* Mesh;
 
+	/** weapon icon */
+	UPROPERTY(EditDefaultsOnly, Category="WeaponSystem|UI")
+	UTexture* IconTexture;
+
 	/** weapon data */
 	UPROPERTY(EditDefaultsOnly, Category="WeaponSystem")
 	FWeaponData WeaponConfig;
@@ -225,9 +229,16 @@ protected:
 	UPROPERTY(BlueprintReadWrite, Transient, ReplicatedUsing=OnRep_WeaponComponent, Category="WeaponSystem|Weapon")
 	UWSWeaponComponent* WeaponComponent;
 
+public:
+	
+	/** Returns weapon icon texture */
+	FORCEINLINE UTexture* GetIcon() const { return IconTexture; };
+
 //----------------------------------------------------------------------------------------------------------------------
 // State
 //----------------------------------------------------------------------------------------------------------------------
+protected:
+	
 	/** current weapon state */
 	UPROPERTY(BlueprintReadWrite, VisibleInstanceOnly, Category="WeaponSystem|Weapon")
 	EWeaponState CurrentState;
