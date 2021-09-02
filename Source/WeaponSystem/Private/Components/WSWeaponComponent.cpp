@@ -207,13 +207,10 @@ bool UWSWeaponComponent::IsFiring() const
 float UWSWeaponComponent::PlayPawnAnimation(UAnimMontage* AnimMontage, float InPlayRate)
 {
 	float Duration = 0.0f;
-	if (GetPawnMesh() && AnimMontage)
+	USkeletalMeshComponent* UseMesh = Cast<USkeletalMeshComponent>(GetPawnMesh());
+	if (UseMesh && AnimMontage && UseMesh->AnimScriptInstance)
 	{
-		USkeletalMeshComponent* UseMesh = GetPawnMesh();
-		if (AnimMontage && UseMesh && UseMesh->AnimScriptInstance)
-		{
-			Duration = UseMesh->AnimScriptInstance->Montage_Play(AnimMontage, InPlayRate);
-		}
+		Duration = UseMesh->AnimScriptInstance->Montage_Play(AnimMontage, InPlayRate);
 	}
 
 	return Duration;
@@ -223,7 +220,7 @@ void UWSWeaponComponent::StopPawnAnimation(UAnimMontage* AnimMontage, float InPl
 {
 	if (GetPawnMesh() && AnimMontage)
 	{
-		USkeletalMeshComponent* UseMesh = GetPawnMesh();
+		USkeletalMeshComponent* UseMesh = Cast<USkeletalMeshComponent>(GetPawnMesh());
 		if (AnimMontage && UseMesh && UseMesh->AnimScriptInstance)
 		{
 			UseMesh->AnimScriptInstance->Montage_Play(AnimMontage, InPlayRate);
@@ -236,7 +233,7 @@ APawn* UWSWeaponComponent::GetPawn()
 	return nullptr;
 }
 
-USkeletalMeshComponent* UWSWeaponComponent::GetPawnMesh()
+UMeshComponent* UWSWeaponComponent::GetPawnMesh()
 {
 	return nullptr;
 }
@@ -251,7 +248,7 @@ bool UWSWeaponComponent::IsLocallyControlled()
 	return (GetPlayerController() && GetPlayerController()->IsLocalController());
 }
 
-void UWSWeaponComponent::PlayCameraShake(TSubclassOf<UMatineeCameraShake> Shake, float Scale)
+void UWSWeaponComponent::PlayCameraShake(TSubclassOf<UCameraShakeBase> Shake, float Scale)
 {
 	APlayerController* PC = GetPlayerController();
 

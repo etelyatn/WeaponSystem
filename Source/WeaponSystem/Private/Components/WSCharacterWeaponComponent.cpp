@@ -8,7 +8,7 @@ APawn* UWSCharacterWeaponComponent::GetPawn()
 	return Cast<APawn>(GetOwner());
 }
 
-USkeletalMeshComponent* UWSCharacterWeaponComponent::GetPawnMesh()
+UMeshComponent* UWSCharacterWeaponComponent::GetPawnMesh()
 {
 	ACharacter* Character = Cast<ACharacter>(GetOwner());
 	if (Character)

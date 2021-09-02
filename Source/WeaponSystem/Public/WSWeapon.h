@@ -387,7 +387,7 @@ protected:
 //----------------------------------------------------------------------------------------------------------------------
 	/** camera shake on firing */
 	UPROPERTY(EditDefaultsOnly, Category="WeaponSystem|Effects")
-	TSubclassOf<UMatineeCameraShake> FireCameraShake;
+	TSubclassOf<UCameraShakeBase> FireCameraShake;
 
 	/** force feedback effect to play when the weapon is fired */
 	UPROPERTY(EditDefaultsOnly, Category="WeaponSystem|Effects")

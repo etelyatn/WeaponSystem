@@ -35,7 +35,7 @@ public:
 
 	/** get currently equipped weapon */
 	UFUNCTION(BlueprintCallable, Category = "WeaponSystem|Weapon")
-    AWSWeapon* GetWeapon() const;
+	AWSWeapon* GetWeapon() const;
 
 	/** attaches weapon mesh to pawn's mesh */
 	void AttachWeaponToPawn(AWSWeapon* InWeapon);
@@ -183,7 +183,7 @@ public:
 	virtual APawn* GetPawn();
 
 	/** get owning pawn mesh component */
-	virtual USkeletalMeshComponent* GetPawnMesh();
+	virtual UMeshComponent* GetPawnMesh();
 
 	/** get current player controller */
 	virtual APlayerController* GetPlayerController();
@@ -198,7 +198,7 @@ public:
 	virtual bool IsVibrationEnabled() { return true; };
 
 	/** play camera shake */
-	virtual void PlayCameraShake(TSubclassOf<UMatineeCameraShake> Shake, float Scale = 1.f);
+	virtual void PlayCameraShake(TSubclassOf<UCameraShakeBase> Shake, float Scale = 1.f);
 
 	/** play client force feedback if allowed */
 	virtual void PlayForceFeedback(class UForceFeedbackEffect* ForceFeedbackEffect, FForceFeedbackParameters Params = FForceFeedbackParameters());

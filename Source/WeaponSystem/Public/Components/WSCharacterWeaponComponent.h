@@ -18,7 +18,7 @@ public:
 
 	virtual APawn* GetPawn() override;
 
-	virtual USkeletalMeshComponent* GetPawnMesh() override;
+	virtual UMeshComponent* GetPawnMesh() override;
 
 	virtual APlayerController* GetPlayerController() override;
 	
