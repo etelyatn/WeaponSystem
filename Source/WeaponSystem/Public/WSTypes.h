@@ -1,6 +1,7 @@
 // 2021 github.com/EugeneTel/WeaponSystem
 
 #pragma once
+#include "Engine/DamageEvents.h"
 
 #include "WSTypes.generated.h"
 
@@ -36,7 +37,7 @@ struct FDecalData
 
 	/** material */
 	UPROPERTY(EditDefaultsOnly, Category=Decal)
-	UMaterial* DecalMaterial;
+	TObjectPtr<UMaterial> DecalMaterial;
 
 	/** quad size (width & height) */
 	UPROPERTY(EditDefaultsOnly, Category=Decal)
@@ -67,7 +68,7 @@ struct FTakeHitInfo
 
 	/** The damage type we were hit with. */
 	UPROPERTY()
-	UClass* DamageTypeClass;
+	TObjectPtr<UClass> DamageTypeClass;
 
 	/** Who hit us */
 	UPROPERTY()

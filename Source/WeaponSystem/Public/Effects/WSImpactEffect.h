@@ -22,75 +22,75 @@ public:
 	
 	/** default impact FX used when material specific override doesn't exist */
 	UPROPERTY(EditDefaultsOnly, Category=Defaults)
-	UParticleSystem* DefaultFX;
+	TObjectPtr<UParticleSystem> DefaultFX;
 
 	/** impact FX on concrete */
 	UPROPERTY(EditDefaultsOnly, Category=Visual)
-	UParticleSystem* ConcreteFX;
+	TObjectPtr<UParticleSystem> ConcreteFX;
 
 	/** impact FX on dirt */
 	UPROPERTY(EditDefaultsOnly, Category=Visual)
-	UParticleSystem* DirtFX;
+	TObjectPtr<UParticleSystem> DirtFX;
 
 	/** impact FX on water */
 	UPROPERTY(EditDefaultsOnly, Category=Visual)
-	UParticleSystem* WaterFX;
+	TObjectPtr<UParticleSystem> WaterFX;
 
 	/** impact FX on metal */
 	UPROPERTY(EditDefaultsOnly, Category=Visual)
-	UParticleSystem* MetalFX;
+	TObjectPtr<UParticleSystem> MetalFX;
 
 	/** impact FX on wood */
 	UPROPERTY(EditDefaultsOnly, Category=Visual)
-	UParticleSystem* WoodFX;
+	TObjectPtr<UParticleSystem> WoodFX;
 
 	/** impact FX on glass */
 	UPROPERTY(EditDefaultsOnly, Category=Visual)
-	UParticleSystem* GlassFX;
+	TObjectPtr<UParticleSystem> GlassFX;
 
 	/** impact FX on grass */
 	UPROPERTY(EditDefaultsOnly, Category=Visual)
-	UParticleSystem* GrassFX;
+	TObjectPtr<UParticleSystem> GrassFX;
 
 	/** impact FX on flesh */
 	UPROPERTY(EditDefaultsOnly, Category=Visual)
-	UParticleSystem* FleshFX;
+	TObjectPtr<UParticleSystem> FleshFX;
 
 	/** default impact sound used when material specific override doesn't exist */
 	UPROPERTY(EditDefaultsOnly, Category=Defaults)
-	USoundCue* DefaultSound;
+	TObjectPtr<USoundCue> DefaultSound;
 
 	/** impact FX on concrete */
 	UPROPERTY(EditDefaultsOnly, Category=Sound)
-	USoundCue* ConcreteSound;
+	TObjectPtr<USoundCue> ConcreteSound;
 
 	/** impact FX on dirt */
 	UPROPERTY(EditDefaultsOnly, Category=Sound)
-	USoundCue* DirtSound;
+	TObjectPtr<USoundCue> DirtSound;
 
 	/** impact FX on water */
 	UPROPERTY(EditDefaultsOnly, Category=Sound)
-	USoundCue* WaterSound;
+	TObjectPtr<USoundCue> WaterSound;
 
 	/** impact FX on metal */
 	UPROPERTY(EditDefaultsOnly, Category=Sound)
-	USoundCue* MetalSound;
+	TObjectPtr<USoundCue> MetalSound;
 
 	/** impact FX on wood */
 	UPROPERTY(EditDefaultsOnly, Category=Sound)
-	USoundCue* WoodSound;
+	TObjectPtr<USoundCue> WoodSound;
 
 	/** impact FX on glass */
 	UPROPERTY(EditDefaultsOnly, Category=Sound)
-	USoundCue* GlassSound;
+	TObjectPtr<USoundCue> GlassSound;
 
 	/** impact FX on grass */
 	UPROPERTY(EditDefaultsOnly, Category=Sound)
-	USoundCue* GrassSound;
+	TObjectPtr<USoundCue> GrassSound;
 
 	/** impact FX on flesh */
 	UPROPERTY(EditDefaultsOnly, Category=Sound)
-	USoundCue* FleshSound;
+	TObjectPtr<USoundCue> FleshSound;
 
 	/** default decal when material specific override doesn't exist */
 	UPROPERTY(EditDefaultsOnly, Category=Defaults)

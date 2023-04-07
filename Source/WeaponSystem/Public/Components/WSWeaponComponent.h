@@ -208,7 +208,7 @@ protected:
 
 	/** currently equipped weapon */
 	UPROPERTY(BlueprintReadWrite, Transient, ReplicatedUsing=OnRep_CurrentWeapon, Category="WeaponSystem|Inventory")
-	AWSWeapon* CurrentWeapon;
+	TObjectPtr<AWSWeapon> CurrentWeapon;
 
 	/** default inventory list */
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="WeaponSystem|Inventory")
@@ -216,7 +216,7 @@ protected:
 
 	/** weapons in inventory */
 	UPROPERTY(BlueprintReadWrite, VisibleInstanceOnly, Transient, Replicated, Category="WeaponSystem|Inventory")
-	TArray<AWSWeapon*> Inventory;
+	TArray<TObjectPtr<AWSWeapon>> Inventory;
 
 	/** socket or bone name for attaching weapon mesh */
 	UPROPERTY(EditDefaultsOnly, Category = "WeaponSystem|Config")

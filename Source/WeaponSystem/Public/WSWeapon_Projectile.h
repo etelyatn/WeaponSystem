@@ -13,8 +13,8 @@ struct FProjectileWeaponData
 {
 	GENERATED_USTRUCT_BODY()
 
-    /** projectile class */
-    UPROPERTY(EditDefaultsOnly, Category=Projectile)
+	/** projectile class */
+	UPROPERTY(EditDefaultsOnly, Category=Projectile)
 	TSubclassOf<AWSProjectile> ProjectileClass;
 
 	/** life time */

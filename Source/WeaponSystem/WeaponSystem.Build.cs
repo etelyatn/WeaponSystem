@@ -25,8 +25,7 @@ public class WeaponSystem : ModuleRules
 		PublicDependencyModuleNames.AddRange(
 			new string[]
 			{
-				"Core",
-				"OnlineSubsystem",
+				"Core"
 			}
 			);
 			

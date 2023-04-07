@@ -211,11 +211,11 @@ protected:
 //----------------------------------------------------------------------------------------------------------------------
 	/** weapon mesh  */
 	UPROPERTY(VisibleDefaultsOnly, Category="WeaponSystem|Config")
-	USkeletalMeshComponent* Mesh;
+	TObjectPtr<USkeletalMeshComponent> Mesh;
 
 	/** weapon icon */
 	UPROPERTY(EditDefaultsOnly, Category="WeaponSystem|UI")
-	UTexture* IconTexture;
+	TObjectPtr<UTexture> IconTexture;
 
 	/** weapon data */
 	UPROPERTY(EditDefaultsOnly, Category="WeaponSystem")
@@ -227,7 +227,7 @@ protected:
 
 	/** The weapon component attached to a Pawn */
 	UPROPERTY(BlueprintReadWrite, Transient, ReplicatedUsing=OnRep_WeaponComponent, Category="WeaponSystem|Weapon")
-	UWSWeaponComponent* WeaponComponent;
+	TObjectPtr<UWSWeaponComponent> WeaponComponent;
 
 public:
 	
@@ -309,31 +309,31 @@ protected:
 	
 	/** single fire sound (bLoopedFireSound not set) */
 	UPROPERTY(EditDefaultsOnly, Category="WeaponSystem|Sound")
-	USoundCue* FireSound;
+	TObjectPtr<USoundCue> FireSound;
 
 	/** looped fire sound (bLoopedFireSound set) */
 	UPROPERTY(EditDefaultsOnly, Category="WeaponSystem|Sound")
-	USoundCue* FireLoopSound;
+	TObjectPtr<USoundCue> FireLoopSound;
 
 	/** finished burst sound (bLoopedFireSound set) */
 	UPROPERTY(EditDefaultsOnly, Category="WeaponSystem|Sound")
-	USoundCue* FireFinishSound;
+	TObjectPtr<USoundCue> FireFinishSound;
 
 	/** out of ammo sound */
 	UPROPERTY(EditDefaultsOnly, Category="WeaponSystem|Sound")
-	USoundCue* OutOfAmmoSound;
+	TObjectPtr<USoundCue> OutOfAmmoSound;
 
 	/** reload sound */
 	UPROPERTY(EditDefaultsOnly, Category="WeaponSystem|Sound")
-	USoundCue* ReloadSound;
+	TObjectPtr<USoundCue> ReloadSound;
 
 	/** equip sound */
 	UPROPERTY(EditDefaultsOnly, Category="WeaponSystem|Sound")
-	USoundCue* EquipSound;
+	TObjectPtr<USoundCue> EquipSound;
 
 	/** firing audio (bLoopedFireSound set) */
 	UPROPERTY(Transient)
-	UAudioComponent* FireAC;
+	TObjectPtr<UAudioComponent> FireAC;
 
 //----------------------------------------------------------------------------------------------------------------------
 // Animation
@@ -344,23 +344,23 @@ protected:
 
 	/** weapon reload animations */
 	UPROPERTY(EditDefaultsOnly, Category="WeaponSystem|Animation")
-	UAnimMontage* WeaponReloadAnim;
+	TObjectPtr<UAnimMontage> WeaponReloadAnim;
 	
 	/** weapon fire animations */
 	UPROPERTY(EditDefaultsOnly, Category="WeaponSystem|Animation")
-	UAnimMontage* WeaponFireAnim;
+	TObjectPtr<UAnimMontage> WeaponFireAnim;
 	
 	/** pawn reload animations */
 	UPROPERTY(EditDefaultsOnly, Category="WeaponSystem|Animation")
-	UAnimMontage* PawnReloadAnim;
+	TObjectPtr<UAnimMontage> PawnReloadAnim;
 
 	/** pawn equip animations */
 	UPROPERTY(EditDefaultsOnly, Category="WeaponSystem|Animation")
-	UAnimMontage* PawnEquipAnim;
+	TObjectPtr<UAnimMontage> PawnEquipAnim;
 
 	/** pawn fire animations */
 	UPROPERTY(EditDefaultsOnly, Category="WeaponSystem|Animation")
-	UAnimMontage* PawnFireAnim;
+	TObjectPtr<UAnimMontage> PawnFireAnim;
 
 
 
@@ -376,11 +376,11 @@ protected:
 
 	/** FX for muzzle flash */
 	UPROPERTY(EditDefaultsOnly, Category="WeaponSystem|VFX")
-	UParticleSystem* MuzzleFX;
+	TObjectPtr<UParticleSystem> MuzzleFX;
 
 	/** spawned component for muzzle FX */
 	UPROPERTY(Transient)
-	UParticleSystemComponent* MuzzlePSC;
+	TObjectPtr<UParticleSystemComponent> MuzzlePSC;
 
 //----------------------------------------------------------------------------------------------------------------------
 // Effects
@@ -391,7 +391,7 @@ protected:
 
 	/** force feedback effect to play when the weapon is fired */
 	UPROPERTY(EditDefaultsOnly, Category="WeaponSystem|Effects")
-	UForceFeedbackEffect *FireForceFeedback;
+	TObjectPtr<UForceFeedbackEffect> FireForceFeedback;
 
 //----------------------------------------------------------------------------------------------------------------------
 // Inventory

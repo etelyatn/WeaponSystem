@@ -23,7 +23,7 @@ public:
 
 	/** explosion FX */
 	UPROPERTY(EditDefaultsOnly, Category=Effect)
-	UParticleSystem* ExplosionFX;
+	TObjectPtr<UParticleSystem> ExplosionFX;
 
 	/** how long keep explosion light on? */
 	UPROPERTY(EditDefaultsOnly, Category=Effect)
@@ -31,7 +31,7 @@ public:
 
 	/** explosion sound */
 	UPROPERTY(EditDefaultsOnly, Category=Effect)
-	USoundCue* ExplosionSound;
+	TObjectPtr<USoundCue> ExplosionSound;
 	
 	/** explosion decals */
 	UPROPERTY(EditDefaultsOnly, Category=Effect)
@@ -58,7 +58,7 @@ private:
 
 	/** explosion light */
 	UPROPERTY(VisibleDefaultsOnly, Category=Effect)
-	UPointLightComponent* ExplosionLight;
+	TObjectPtr<UPointLightComponent> ExplosionLight;
 
 	/** Point light component name */
 	FName ExplosionLightComponentName;

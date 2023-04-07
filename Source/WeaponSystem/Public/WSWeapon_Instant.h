@@ -104,7 +104,7 @@ protected:
 
 	/** smoke trail */
 	UPROPERTY(EditDefaultsOnly, Category="WeaponSystem|Effects")
-	UParticleSystem* TrailFX;
+	TObjectPtr<UParticleSystem> TrailFX;
 
 	/** param name for beam target in smoke trail */
 	UPROPERTY(EditDefaultsOnly, Category="WeaponSystem|Effects")

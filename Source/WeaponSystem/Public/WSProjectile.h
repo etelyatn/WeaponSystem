@@ -30,19 +30,19 @@ public:
 
 	/** handle hit */
 	UFUNCTION()
-    void OnImpact(const FHitResult& HitResult);
+	void OnImpact(const FHitResult& HitResult);
 
 private:
 	/** movement component */
 	UPROPERTY(VisibleDefaultsOnly, Category=Projectile)
-	UProjectileMovementComponent* MovementComp;
+	TObjectPtr<UProjectileMovementComponent> MovementComp;
 
 	/** collisions */
 	UPROPERTY(VisibleDefaultsOnly, Category=Projectile)
-	USphereComponent* CollisionComp;
+	TObjectPtr<USphereComponent> CollisionComp;
 
 	UPROPERTY(VisibleDefaultsOnly, Category=Projectile)
-	UParticleSystemComponent* ParticleComp;
+	TObjectPtr<UParticleSystemComponent> ParticleComp;
 	
 protected:
 
@@ -62,7 +62,7 @@ protected:
 
 	/** [client] explosion happened */
 	UFUNCTION()
-    void OnRep_Exploded();
+	void OnRep_Exploded();
 
 	/** trigger explosion */
 	void Explode(const FHitResult& Impact);
